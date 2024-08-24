@@ -1,98 +1,114 @@
 ﻿using LibDeflate.Buffers;
 using LibDeflate.Imports;
+
 using System;
 using System.Buffers;
 
 namespace LibDeflate;
 
-using static Compression;
+using static Library;
 
 public abstract class Compressor : IDisposable
 {
-    protected readonly IntPtr compressor;
+    protected nint CompressorPtr { get; }
 
-    private bool disposedValue;
+    private bool disposed;
 
     protected Compressor(int compressionLevel)
     {
-        if (compressionLevel < 0 || compressionLevel > 12)
+        if (compressionLevel is < 0 or > 12)
         {
-            ThrowHelperBadCompressionLevel();
+            throw new ArgumentOutOfRangeException(nameof(compressionLevel));
         }
 
-        var compressor = libdeflate_alloc_compressor(compressionLevel);
-        if (compressor == IntPtr.Zero)
+        CompressorPtr = libdeflate_alloc_compressor(compressionLevel);
+        if (CompressorPtr == nint.Zero)
         {
-            ThrowHelperFailedAllocCompressor();
+            throw new InvalidOperationException("Failed to allocate compressor");
         }
-
-        this.compressor = compressor;
-
-        static void ThrowHelperBadCompressionLevel() => throw new ArgumentOutOfRangeException(nameof(compressionLevel));
-
-        static void ThrowHelperFailedAllocCompressor() => throw new InvalidOperationException("Failed to allocate compressor");
     }
-    ~Compressor() => Dispose(disposing: false);
 
-    protected abstract nuint CompressCore(ReadOnlySpan<byte> input, Span<byte> output);
+    ~Compressor()
+    {
+        Dispose(disposing: false);
+    }
 
-    protected abstract nuint GetBoundCore(nuint inputLength);
-
-    public IMemoryOwner<byte>? Compress(ReadOnlySpan<byte> input, bool useUpperBound = false)
+    public IMemoryOwner<byte>? Compress(
+        ReadOnlySpan<byte> input,
+        bool               useUpperBound = false
+    )
     {
         DisposedGuard();
-        var output = MemoryOwner<byte>.Allocate(useUpperBound ? GetBound(input.Length) : input.Length);
-        try
         {
-            nuint bytesWritten = CompressCore(input, output.Span);
-            if (bytesWritten == UIntPtr.Zero)
+            var output = MemoryOwner<byte>.Allocate(useUpperBound ? GetBound(input.Length) : input.Length);
+            try
             {
+                var bytesWritten = CompressCore(input, output.Span);
+                if (bytesWritten != nuint.Zero)
+                {
+                    return output[..(int)bytesWritten];
+                }
+
                 output.Dispose();
                 return null;
             }
-
-            return output[..(int)bytesWritten];
+            catch
+            {
+                output.Dispose();
+                throw;
+            }
         }
-        catch
+    }
+
+    public int Compress(
+        ReadOnlySpan<byte> input,
+        Span<byte>         output
+    )
+    {
+        DisposedGuard();
         {
-            output?.Dispose();
-            throw;
+            return (int)CompressCore(input, output);
         }
     }
-    public int Compress(ReadOnlySpan<byte> input, Span<byte> output)
-    {
-        DisposedGuard();
-        return (int)CompressCore(input, output);
-    }
 
-    public int GetBound(int inputLength)
+    protected abstract nuint CompressCore(
+        ReadOnlySpan<byte> input,
+        Span<byte>         output
+    );
+
+    protected abstract nuint GetBoundCore(
+        nuint inputLength
+    );
+
+    private int GetBound(
+        int inputLength
+    )
     {
         DisposedGuard();
-        return (int)GetBoundCore((nuint)inputLength);
+        {
+            return (int)GetBoundCore((nuint)inputLength);
+        }
     }
 
     private void DisposedGuard()
     {
-        if(disposedValue)
+        if (!disposed)
         {
-            ThrowHelperObjectDisposed();
+            return;
         }
 
-        static void ThrowHelperObjectDisposed() => throw new ObjectDisposedException(nameof(Compressor));
+        throw new ObjectDisposedException(nameof(Compressor));
     }
 
     protected virtual void Dispose(bool disposing)
     {
-        if (!disposedValue)
+        if (disposed)
         {
-            //no managed state to dispose
-            //if (disposing)
-            //{
-            //}
-
-            libdeflate_free_compressor(compressor);
-            disposedValue = true;
+            return;
         }
+
+        libdeflate_free_compressor(CompressorPtr);
+        disposed = true;
     }
 
     public void Dispose()

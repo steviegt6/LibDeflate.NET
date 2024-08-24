@@ -1,18 +1,28 @@
-﻿using LibDeflate.Imports;
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 
 namespace LibDeflate;
 
-public sealed class DeflateCompressor : Compressor
+public sealed class DeflateCompressor(int compressionLevel) : Compressor(compressionLevel)
 {
-    public DeflateCompressor(int compressionLevel) : base(compressionLevel)
+    protected override nuint CompressCore(
+        ReadOnlySpan<byte> input,
+        Span<byte>         output
+    )
     {
+        return libdeflate_deflate_compress(
+            CompressorPtr,
+            MemoryMarshal.GetReference(input),
+            (nuint)input.Length,
+            ref MemoryMarshal.GetReference(output),
+            (nuint)output.Length
+        );
     }
 
-    protected override nuint CompressCore(ReadOnlySpan<byte> input, Span<byte> output)
-        => Compression.libdeflate_deflate_compress(compressor, MemoryMarshal.GetReference(input), (nuint)input.Length, ref MemoryMarshal.GetReference(output), (nuint)output.Length);
-
-    protected override nuint GetBoundCore(nuint inputLength)
-        => Compression.libdeflate_deflate_compress_bound(compressor, inputLength);
+    protected override nuint GetBoundCore(
+        nuint inputLength
+    )
+    {
+        return libdeflate_deflate_compress_bound(CompressorPtr, inputLength);
+    }
 }

@@ -1,56 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <AssemblyName>LibDeflate.NET</AssemblyName>
-    <VersionPrefix>1.19.0</VersionPrefix>
-    <Authors>jzebedee</Authors>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/jzebedee/LibDeflate</PackageProjectUrl>
-    <PackageTags>libdeflate.net libdeflate deflate zlib gzip gz crc32 crc adler32 adler</PackageTags>
-    <Description>LibDeflate.NET is a managed wrapper around libdeflate, a native library for fast, whole-buffer DEFLATE-based compression and decompression.</Description>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <AssemblyName>LibDeflate.NET</AssemblyName>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-    <LangVersion>preview</LangVersion>
-    <Nullable>enable</Nullable>
-
-    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
-
-  <!-- only enable trimming for TFMs that support it -->
-  <!-- see: https://learn.microsoft.com/en-us/dotnet/core/compatibility/sdk/8.0/trimming-unsupported-targetframework -->
-  <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))">
-    <IsTrimmable>true</IsTrimmable>
-  </PropertyGroup>
-
-  <!-- Source Link Support -->
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-  </ItemGroup>
-
-  <!-- TFM-specific dependencies -->
-  <Choose>
-    <When Condition="'$(TargetFramework)' == 'netstandard2.0'">
-      <ItemGroup>
-        <PackageReference Include="PolySharp" Version="1.13.2">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="System.Memory" Version="4.5.3" />
-        <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
-      </ItemGroup>
-    </When>
-  </Choose>
-
-  <!-- Regular dependencies -->
-  <ItemGroup>
-    <PackageReference Include="LibDeflate.Native" Version="1.19.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="LibDeflate.Native" Version="1.19.0"/>
+    </ItemGroup>
 
 </Project>
