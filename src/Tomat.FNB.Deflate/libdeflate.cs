@@ -171,7 +171,21 @@ public static partial class libdeflate
 #endregion
 
 #region Checksums
-    // TODO: Unimplemented.
+    [LibraryImport(dll_name)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial uint libdeflate_adler32(
+        uint    adler,
+        in byte buffer,
+        nuint   len
+    );
+
+    [LibraryImport(dll_name)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static partial uint libdeflate_crc32(
+        uint    crc,
+        in byte buffer,
+        nuint   len
+    );
 #endregion
 
 #region Custom memory allocator
