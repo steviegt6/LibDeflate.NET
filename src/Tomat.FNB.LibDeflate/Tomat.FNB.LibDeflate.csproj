@@ -5,6 +5,7 @@
         <AssemblyName>LibDeflate.NET</AssemblyName>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
+        <RootNamespace>LibDeflate</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

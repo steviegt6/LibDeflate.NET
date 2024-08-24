@@ -393,6 +393,6 @@ internal sealed class MemoryOwner<T> : IMemoryOwner<T>
         }
 
         // Same representation used in Span<T>
-        return $"LibDeflate.Buffers.MemoryOwner<{typeof(T)}>[{Length}]";
+        return $"Tomat.FNB.LibDeflate.Buffers.MemoryOwner<{typeof(T)}>[{Length}]";
     }
 }
