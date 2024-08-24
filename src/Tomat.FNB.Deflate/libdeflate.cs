@@ -1,16 +1,17 @@
-﻿global using static LibDeflate.Imports.Library;
-
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace LibDeflate.Imports;
+// ReSharper disable InconsistentNaming
 
-internal static partial class Library
+namespace Tomat.FNB.Deflate;
+
+// The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
+#pragma warning disable CS8981
+public static partial class libdeflate
 {
     private const string dll_name = "libdeflate";
 
 #region Compression
-    // ReSharper disable InconsistentNaming
     [LibraryImport(dll_name)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial nint libdeflate_alloc_compressor(
@@ -80,11 +81,9 @@ internal static partial class Library
     public static partial void libdeflate_free_compressor(
         nint pCompressor
     );
-    // ReSharper restore InconsistentNaming
 #endregion
 
 #region Decompression
-    // ReSharper disable InconsistentNaming
     [LibraryImport(dll_name)]
     [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
     public static partial nint libdeflate_alloc_decompressor();
@@ -169,7 +168,6 @@ internal static partial class Library
     public static partial void libdeflate_free_decompressor(
         nint pDecompressor
     );
-    // ReSharper restore InconsistentNaming
 #endregion
 
 #region Checksums
@@ -177,7 +175,6 @@ internal static partial class Library
 #endregion
 
 #region Custom memory allocator
-    // ReSharper disable InconsistentNaming
     // TODO: UnmanagedFunctionPointer?
     public delegate nint Malloc(
         nuint size
@@ -194,6 +191,6 @@ internal static partial class Library
         Malloc malloc,
         Free   free
     );
-    // ReSharper restore InconsistentNaming
 #endregion
 }
+#pragma warning restore CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.

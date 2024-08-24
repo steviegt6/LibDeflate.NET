@@ -1,13 +1,19 @@
 using System;
 using System.Buffers;
 
-using LibDeflate.Imports;
+namespace Tomat.FNB.Deflate;
 
-namespace LibDeflate.Util;
-
-internal static class LibDeflateResultExtensions
+public enum LibDeflateResult
 {
-    internal static OperationStatus ToStatus(this LibDeflateResult @this)
+    Success           = 0,
+    BadData           = 1,
+    ShortOutput       = 2,
+    InsufficientSpace = 3,
+}
+
+public static class LibDeflateResultExtensions
+{
+    public static OperationStatus ToStatus(this LibDeflateResult @this)
     {
         return @this switch
         {
