@@ -189,12 +189,10 @@ public static partial class libdeflate
 #endregion
 
 #region Custom memory allocator
-    // TODO: UnmanagedFunctionPointer?
     public delegate nint Malloc(
         nuint size
     );
 
-    // TODO: UnmanagedFunctionPointer?
     public delegate void Free(
         nint alloc
     );
