@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace Tomat.FNB.Deflate;
 
-// The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
 #pragma warning disable CS8981
+#pragma warning disable CA1401
 public static partial class libdeflate
 {
     private const string dll_name = "libdeflate";
@@ -189,10 +189,12 @@ public static partial class libdeflate
 #endregion
 
 #region Custom memory allocator
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate nint Malloc(
         nuint size
     );
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void Free(
         nint alloc
     );
@@ -203,6 +205,14 @@ public static partial class libdeflate
         Malloc malloc,
         Free   free
     );
+
+    [LibraryImport(dll_name)]
+    [UnmanagedCallConv(CallConvs = [typeof(CallConvCdecl)])]
+    public static unsafe partial void libdeflate_set_memory_allocator(
+        delegate* unmanaged[Cdecl]<nuint, void*> malloc,
+        delegate* unmanaged[Cdecl]<void*, void>  free
+    );
 #endregion
 }
-#pragma warning restore CS8981 // The type name only contains lower-cased ascii characters. Such names may become reserved for the language.
+#pragma warning restore CS8981
+#pragma warning restore CA1401

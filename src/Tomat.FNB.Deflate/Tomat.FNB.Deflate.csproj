@@ -5,10 +5,19 @@
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <!--
+            CS8981: Ignore warning about using all-lowercase ASCII name...
+              `libdeflate` is never going to become a reserved keyword.
+            NETSDK1206: Ignore warning about providing natives for an outdated
+              RID; Tomat.LibDeflate.Native packages osx.11.0 and osx, taking
+              care of .NET 7.0- and .NET 8.0+ cases respectively.
+        -->
+        <NoWarn>CS8981;NETSDK1206</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Tomat.LibDeflate.Native" Version="1.21.0"/>
+        <PackageReference Include="Tomat.LibDeflate.Native" Version="1.21.1"/>
     </ItemGroup>
 
 </Project>
