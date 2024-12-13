@@ -7,7 +7,7 @@ namespace Tomat.FNB.Deflate;
 
 #pragma warning disable CS8981
 #pragma warning disable CA1401
-public static partial class libdeflate
+public static unsafe partial class libdeflate
 {
     private const string dll_name = "libdeflate";
 
